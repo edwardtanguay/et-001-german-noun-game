@@ -10,6 +10,7 @@ interface INoun {
 	singular: string;
 	plural: string;
 	isOpen: boolean;
+	isLearned: boolean;
 }
 
 function App() {
@@ -24,10 +25,10 @@ function App() {
 				const _noun: INoun = {
 					...rawNoun,
 					isOpen: false,
+					isLearned: false,
 				};
 				_nouns.push(_noun);
 			});
-			console.log(_nouns);
 			setNouns(_nouns);
 		})();
 	}, []);
@@ -35,26 +36,51 @@ function App() {
 	const handleFlashcardClick = (noun: INoun) => {
 		noun.isOpen = !noun.isOpen;
 		setNouns([...nouns]);
-	}
+	};
+
+	const handleMarkAsLearned = (noun: INoun) => {
+		noun.isLearned = !noun.isLearned;
+		setNouns([...nouns]);
+	};
 
 	return (
 		<div className="App">
 			<h1>German Noun Game</h1>
-			<h2>There are {nouns.length} nouns:</h2>
+			<h2>You have learned {nouns.reduce((total,noun) => total + (noun.isLearned ? 1 : 0), 0)} of {nouns.length} nouns:</h2>
 			<div className="nouns">
 				{nouns.map((noun) => {
 					return (
-						<div className="noun" key={noun.singular}>
-							<div className="front" onClick={() => handleFlashcardClick(noun)}>{noun.singular}</div>
-							{noun.isOpen && (
-								<div className="back">
-									<div className="singular">
-										{noun.article} {noun.singular}
+						<>
+							{!noun.isLearned && (
+								<div className="noun" key={noun.singular}>
+									<div
+										className="front"
+										onClick={() =>
+											handleFlashcardClick(noun)
+										}
+									>
+										{noun.singular}
 									</div>
-									<div className="plural">{noun.plural}</div>
+									{noun.isOpen && (
+										<div className="back">
+											<div className="singular">
+												{noun.article} {noun.singular}
+											</div>
+											<div className="plural">
+												{noun.plural}
+											</div>
+											<button
+												onClick={() =>
+													handleMarkAsLearned(noun)
+												}
+											>
+												Mark as learned
+											</button>
+										</div>
+									)}
 								</div>
 							)}
-						</div>
+						</>
 					);
 				})}
 			</div>
