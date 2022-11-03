@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.scss';
 import axios from 'axios';
+import * as tools from './tools';
 
 const url = 'https://edwardtanguay.vercel.app/share/germanNouns.json';
 
@@ -15,7 +16,9 @@ function App() {
 
 	useEffect(() => {
 		(async () => {
-			setNouns((await axios.get(url)).data);
+			let _nouns = (await axios.get(url)).data;
+			_nouns = tools.randomize(_nouns);
+			setNouns(_nouns);
 		})();
 	}, []);
 
