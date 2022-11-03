@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.scss';
 import axios from 'axios';
 import * as tools from './tools';
@@ -18,41 +18,67 @@ function App() {
 
 	useEffect(() => {
 		(async () => {
-			let rawNouns = (await axios.get(url)).data;
-			rawNouns = tools.randomize(rawNouns);
-			const _nouns: INoun[] = [];
-			rawNouns.forEach((rawNoun: any) => {
-				const _noun: INoun = {
-					...rawNoun,
-					isOpen: false,
-					isLearned: false,
-				};
-				_nouns.push(_noun);
-			});
+			let _nouns: INoun[] = [];
+			const localStorageString = localStorage.getItem(
+				'german-noun-game-state'
+			);
+			if (localStorageString !== null) {
+				_nouns = JSON.parse(localStorageString);
+			} else {
+				let rawNouns = [];
+				rawNouns = (await axios.get(url)).data;
+				rawNouns = tools.randomize(rawNouns);
+				rawNouns.forEach((rawNoun: any) => {
+					const _noun: INoun = {
+						...rawNoun,
+						isOpen: false,
+						isLearned: false,
+					};
+					_nouns.push(_noun);
+				});
+			}
 			setNouns(_nouns);
 		})();
 	}, []);
 
+	const saveNouns = () => {
+		setNouns([...nouns]);
+		localStorage.setItem('german-noun-game-state', JSON.stringify(nouns));
+	};
+
 	const handleFlashcardClick = (noun: INoun) => {
 		noun.isOpen = !noun.isOpen;
-		setNouns([...nouns]);
+		saveNouns();
 	};
 
 	const handleMarkAsLearned = (noun: INoun) => {
 		noun.isLearned = !noun.isLearned;
-		setNouns([...nouns]);
+		saveNouns();
+	};
+
+	const handleResetGameButton = () => {
+		localStorage.removeItem('german-noun-game-state');
+		window.location.reload();
 	};
 
 	return (
 		<div className="App">
 			<h1>German Noun Game</h1>
-			<h2>You have learned {nouns.reduce((total,noun) => total + (noun.isLearned ? 1 : 0), 0)} of {nouns.length} nouns:</h2>
+			<h2>
+				You have learned{' '}
+				{nouns.reduce(
+					(total, noun) => total + (noun.isLearned ? 1 : 0),
+					0
+				)}{' '}
+				of {nouns.length} nouns.{' '}
+				<button onClick={handleResetGameButton}>Reset game</button>
+			</h2>
 			<div className="nouns">
 				{nouns.map((noun) => {
 					return (
-						<>
+						<React.Fragment key={noun.singular}>
 							{!noun.isLearned && (
-								<div className="noun" key={noun.singular}>
+								<div className="noun">
 									<div
 										className="front"
 										onClick={() =>
@@ -80,7 +106,7 @@ function App() {
 									)}
 								</div>
 							)}
-						</>
+						</React.Fragment>
 					);
 				})}
 			</div>
