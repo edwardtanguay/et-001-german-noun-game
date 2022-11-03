@@ -7,4 +7,30 @@ body {
 	h1 {
 		color: rgb(209, 168, 85);
 	}
+
+	.nouns {
+
+		.noun {
+			background-color: rgb(11, 77, 11);
+			margin-bottom: 1rem;
+			padding: .6rem;
+			width: 17rem;
+
+			.front {}
+
+			.back {
+				margin-top: .5rem;
+				background-color: rgb(16, 61, 16);
+				padding: .3rem;
+
+				.singular {
+					color: yellow;
+				}
+				.plural {
+					color: rgb(112, 112, 26);
+					font-style: italic;
+				}
+			}
+		}
+	}
 }

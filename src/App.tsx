@@ -30,8 +30,12 @@ function App() {
 				{nouns.map((noun) => {
 					return (
 						<div className="noun" key={noun.singular}>
-							<div className="singular">
-								{noun.article} {noun.singular}
+							<div className="front">
+								{noun.singular}
+							</div>
+							<div className="back">
+								<div className="singular">{noun.article} {noun.singular}</div>
+								<div className="plural">{noun.plural}</div>
 							</div>
 						</div>
 					);
